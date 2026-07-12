@@ -1,5 +1,6 @@
 import { mindSporeLite } from '@kit.MindSporeLiteKit';
 import { CLASS_NAMES, DetectionBox } from './DetectionType';
+import { ModelBufferHolder } from './ModelBufferHolder';
 
 const CLASS_NUM: number = 5;
 const OUTPUT_ELEM_PER_ROW: number = 5 + CLASS_NUM;
@@ -26,14 +27,23 @@ export class YoloModel {
     return this.msModel !== null;
   }
 
-  async init(modelBuffer: ArrayBuffer): Promise<boolean> {
-    console.info('[YoloModel] init() called, buffer size=' + modelBuffer.byteLength.toString());
-    try {
-      if (!modelBuffer || modelBuffer.byteLength === 0) {
-        console.error('[YoloModel] init failed: model buffer is null or empty');
-        return false;
-      }
+  async init(modelData?: Uint8Array): Promise<boolean> {
+    let data: Uint8Array | null = null;
 
+    if (ModelBufferHolder.data !== null && ModelBufferHolder.data.byteLength > 0) {
+      data = ModelBufferHolder.data;
+      console.info('[YoloModel] init() using ModelBufferHolder, size=' + data.byteLength.toString());
+    } else if (modelData !== undefined && modelData.byteLength > 0) {
+      data = modelData;
+      console.info('[YoloModel] init() using passed data, size=' + data.byteLength.toString());
+    }
+
+    if (data === null || data.byteLength === 0) {
+      console.error('[YoloModel] init failed: no valid model data available');
+      return false;
+    }
+
+    try {
       let context: mindSporeLite.Context = {};
       context.target = ['cpu'];
       context.cpu = {};
@@ -43,7 +53,7 @@ export class YoloModel {
 
       console.info('[YoloModel] Calling loadModelFromBuffer...');
       let startTime: number = Date.now();
-      this.msModel = await mindSporeLite.loadModelFromBuffer(modelBuffer, context);
+      this.msModel = await mindSporeLite.loadModelFromBuffer(data.buffer, context);
       let elapsed: number = Date.now() - startTime;
       console.info('[YoloModel] loadModelFromBuffer completed in ' + elapsed.toString() + ' ms');
 

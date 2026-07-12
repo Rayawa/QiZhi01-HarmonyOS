@@ -5,8 +5,12 @@
 **/build
 /.hvigor
 .cxx
+/.idea
+.DS_Store
 /.clangd
 /.clang-format
 /.clang-tidy
 **/.test
 /.appanalyzer
+/.deveco/
+/.codegenie/

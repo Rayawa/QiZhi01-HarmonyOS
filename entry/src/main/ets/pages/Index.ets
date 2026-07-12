@@ -3,6 +3,7 @@ import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { fileIo as fs } from '@kit.CoreFileKit';
 import { YoloModel } from '../model/YoloModel';
 import { CLASS_COLORS, CLASS_NAMES, DetectionBox, MODEL_INPUT_SIZE } from '../model/DetectionType';
+import { ModelBufferHolder } from '../model/ModelBufferHolder';
 
 @Entry
 @Component
@@ -29,7 +30,19 @@ struct Index {
 
   private async initEngine(): Promise<void> {
     try {
-      let modelBuffer: ArrayBuffer | undefined = AppStorage.get<ArrayBuffer>('modelBuffer');
+      let modelBuffer: ArrayBuffer | undefined = undefined;
+
+      if (ModelBufferHolder.data !== null && ModelBufferHolder.data.byteLength > 0) {
+        modelBuffer = ModelBufferHolder.data.buffer;
+        console.info('[Index] initEngine: using ModelBufferHolder, size=' + ModelBufferHolder.data.byteLength.toString());
+      } else {
+        let fileData: Uint8Array | undefined = AppStorage.get<Uint8Array>('modelData');
+        if (fileData) {
+          modelBuffer = fileData.buffer;
+        }
+        console.info('[Index] initEngine: using AppStorage');
+      }
+
       if (!modelBuffer) {
         console.error('[Index] initEngine: modelBuffer is undefined, AppStorage.get returned null');
         this.tipText = '模型文件未加载，请检查rawfile中是否存在best_kirin.ms';

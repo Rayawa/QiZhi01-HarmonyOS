@@ -2,6 +2,7 @@ import { AbilityConstant, ConfigurationConstant, UIAbility, Want } from '@kit.Ab
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import { resourceManager } from '@kit.LocalizationKit';
+import { ModelBufferHolder } from '../model/ModelBufferHolder';
 
 const DOMAIN: number = 0x0000;
 const TAG: string = 'EntryAbility';
@@ -27,31 +28,30 @@ export default class EntryAbility extends UIAbility {
       let resMgr: resourceManager.ResourceManager = this.context.resourceManager;
       if (!resMgr) {
         hilog.error(DOMAIN, TAG, 'Failed to get resourceManager, context may not be ready');
-        AppStorage.setOrCreate('modelBuffer', new ArrayBuffer(0));
+        AppStorage.setOrCreate('modelData', new Uint8Array(0));
+        ModelBufferHolder.data = null;
         return;
       }
 
       let fileData: Uint8Array = await resMgr.getRawFileContent(MODEL_FILENAME);
       if (!fileData || fileData.byteLength === 0) {
         hilog.error(DOMAIN, TAG, 'Model file %{public}s is empty or not found', MODEL_FILENAME);
-        AppStorage.setOrCreate('modelBuffer', new ArrayBuffer(0));
+        AppStorage.setOrCreate('modelData', new Uint8Array(0));
+        ModelBufferHolder.data = null;
         return;
       }
 
       hilog.info(DOMAIN, TAG, 'Model file size: %{public}d bytes', fileData.byteLength);
 
-      let modelBuffer = fileData.buffer;
-      if (!modelBuffer || modelBuffer.byteLength === 0) {
-        hilog.error(DOMAIN, TAG, 'Model buffer is empty after extracting from file data');
-        AppStorage.setOrCreate('modelBuffer', new ArrayBuffer(0));
-        return;
-      }
+      ModelBufferHolder.data = fileData;
+      hilog.info(DOMAIN, TAG, 'Model data stored in ModelBufferHolder');
 
-      AppStorage.setOrCreate('modelBuffer', modelBuffer);
-      hilog.info(DOMAIN, TAG, 'Model buffer (%{public}d bytes) stored in AppStorage', modelBuffer.byteLength);
+      AppStorage.setOrCreate('modelData', fileData);
+      hilog.info(DOMAIN, TAG, 'Model data also stored in AppStorage');
     } catch (err) {
       hilog.error(DOMAIN, TAG, 'loadModelBuffer failed: %{public}s', JSON.stringify(err));
-      AppStorage.setOrCreate('modelBuffer', new ArrayBuffer(0));
+      AppStorage.setOrCreate('modelData', new Uint8Array(0));
+      ModelBufferHolder.data = null;
     }
   }
 
