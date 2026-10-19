@@ -1,4 +1,4 @@
-# Ascend310-HarmonyOS
+# QiZhi01-HarmonyOS
 
 ## 项目概述
 
@@ -22,7 +22,7 @@
 ## 项目结构
 
 ```
-Ascend310-HarmonyOS/
+QiZhi01-HarmonyOS/
 ├── build-profile.json5              # 顶层构建配置（签名、SDK版本、编译模式）
 ├── oh-package.json5                 # 顶层包配置
 ├── hvigorfile.ts                    # Hvigor 构建入口
@@ -182,4 +182,4 @@ bm install -p /mnt/sdcard/entry-default-signed.hap
 ## 相关文档
 
 - 项目配套详细技术文档位于 `../` 目录下的 `.docx` 系列文件
-- CANN 推理引擎安装指南参考 `../Ascend310-OpenHarmony/device_board_ascend/tests/cann/`
+- CANN 推理引擎安装指南参考 `../QiZhi01-OpenHarmony/device_board_ascend/tests/cann/`
