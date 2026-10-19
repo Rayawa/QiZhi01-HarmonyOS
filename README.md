@@ -30,7 +30,7 @@ QiZhi01-HarmonyOS/
 ├── .clangd / .clang-tidy            # C++ 语言服务器与静态检查配置
 │
 ├── AppScope/                        # 应用全局配置
-│   └── app.json5                    # 全局清单：bundleName(top.rayawa.ascend310)、版本、图标
+│   └── app.json5                    # 全局清单：bundleName(top.rayawa.qizhi01)、版本、图标
 │
 ├── hvigor/                          # Hvigor 构建系统配置
 │   └── hvigor-config.json5
